@@ -1,1 +1,1 @@
-# Snakemake tutorial for beginners
+# Snakemake tutorial
