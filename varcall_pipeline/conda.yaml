@@ -1,0 +1,11 @@
+name: blastim
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - matplotlib
+  - graphviz
+  - bcftools
+  - samtools
+  - bwa
+  - pysam

@@ -1,0 +1,50 @@
+SAMPLES = ["A", "B", "C"]
+
+rule all:
+    input:
+        "results/plots/quals.svg"
+
+rule alignment:
+    input:
+        "data/genome.fa",
+        "data/samples/{sample}.fastq"
+    output:
+        "results/mapped/{sample}.bam"
+    conda:
+        "conda.yaml"
+    shell:
+        "bwa mem {input} | samtools view -b - > {output}"
+
+rule sort_alignment:
+    input:
+        "results/mapped/{sample}.bam"
+    output:
+        "results/mapped/{sample}.sorted.bam"
+    conda:
+        "conda.yaml"
+    shell:
+        "samtools sort -o {output} {input}"
+
+rule bcftools_call:
+    input:
+        fa="data/genome.fa",
+        bam=expand("results/mapped/{sample}.sorted.bam", sample=SAMPLES),
+    output:
+        "results/calls/all.vcf"
+    conda:
+        "conda.yaml"
+    shell:
+        "bcftools mpileup -f {input.fa} {input.bam} | bcftools call -mv - > {output}"
+
+rule plot_quals:
+    input:
+        "results/calls/all.vcf"
+    output:
+        "results/plots/quals.svg"
+    conda:
+        "conda.yaml"
+    script:
+        "scripts/plot-quals.py"
+
+
+
